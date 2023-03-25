@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hierarchicaldata.mapper.DepartmentMapper">
+    <resultMap id="BaseResultMap" type="com.example.hierarchicaldata.entity.Department">
+        <!--@mbg.generated-->
+        <!--@Table department-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="lft" jdbcType="INTEGER" property="lft"/>
+        <result column="rgt" jdbcType="INTEGER" property="rgt"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id,
+        parent_id,
+        `name`,
+        lft,
+        rgt,
+        `level`
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from department
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        <!--@mbg.generated-->
+        delete
+        from department
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.example.hierarchicaldata.entity.Department"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into department (parent_id, `name`, lft,
+                                rgt, `level`)
+        values (#{parentId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{lft,jdbcType=INTEGER},
+                #{rgt,jdbcType=INTEGER}, #{level,jdbcType=INTEGER})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.example.hierarchicaldata.entity.Department" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into department
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="lft != null">
+                lft,
+            </if>
+            <if test="rgt != null">
+                rgt,
+            </if>
+            <if test="level != null">
+                `level`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">
+                #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="lft != null">
+                #{lft,jdbcType=INTEGER},
+            </if>
+            <if test="rgt != null">
+                #{rgt,jdbcType=INTEGER},
+            </if>
+            <if test="level != null">
+                #{level,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.example.hierarchicaldata.entity.Department">
+        <!--@mbg.generated-->
+        update department
+        <set>
+            <if test="parentId != null">
+                parent_id = #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="lft != null">
+                lft = #{lft,jdbcType=INTEGER},
+            </if>
+            <if test="rgt != null">
+                rgt = #{rgt,jdbcType=INTEGER},
+            </if>
+            <if test="level != null">
+                `level` = #{level,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.example.hierarchicaldata.entity.Department">
+        <!--@mbg.generated-->
+        update department
+        set parent_id = #{parentId,jdbcType=BIGINT},
+            `name`    = #{name,jdbcType=VARCHAR},
+            lft       = #{lft,jdbcType=INTEGER},
+            rgt       = #{rgt,jdbcType=INTEGER},
+            `level`   = #{level,jdbcType=INTEGER}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update department
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="parent_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.parentId,jdbcType=BIGINT}
+                </foreach>
+            </trim>
+            <trim prefix="`name` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="lft = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.lft,jdbcType=INTEGER}
+                </foreach>
+            </trim>
+            <trim prefix="rgt = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.rgt,jdbcType=INTEGER}
+                </foreach>
+            </trim>
+            <trim prefix="`level` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.level,jdbcType=INTEGER}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=BIGINT}
+        </foreach>
+    </update>
+
+    <update id="updateAddBackData">
+        update department
+        set lft = if(lft &gt; #{lft,jdbcType=INTEGER}, lft + 2, lft),
+            rgt=if(rgt &gt;= #{lft,jdbcType=INTEGER}, rgt + 2, rgt)
+        where lft &gt; #{lft,jdbcType=INTEGER}
+           or rgt &gt;= #{lft,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateDelBackData">
+        update department
+        set lft = IF(lft &gt; #{lft,jdbcType=INTEGER}, lft - 2, lft),
+            rgt= IF(rgt &gt; #{lft,jdbcType=INTEGER}, rgt - 2, rgt)
+        where lft &gt; #{lft,jdbcType=INTEGER}
+           or rgt &gt; #{lft,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectDescendant" resultMap="BaseResultMap">
+        <!--        select id, name, lft, rgt, level-->
+        <!--        from department-->
+        <!--        &lt;where&gt;-->
+        <!--            lft &amp;gt; #{lft,jdbcType=INTEGER}-->
+        <!--              AND lft &amp;lt; #{rgt,jdbcType=INTEGER}-->
+        <!--            &lt;if test="level != null"&gt;-->
+        <!--                and level &amp;lt;= #{level,jdbcType=INTEGER}+department.level-->
+        <!--            &lt;/if&gt;-->
+        <!--        &lt;/where&gt;-->
+        <!--        ORDER BY lft ASC;-->
+
+        select id, name, lft, rgt, level
+        from department
+        where exists(
+        select 1
+        from department d
+        <where>
+            id = #{id,jdbcType=BIGINT}
+            <if test="includeSelf != null and includeSelf">
+                and department.lft between d.lft and d.rgt
+            </if>
+            <if test="includeSelf==null or !includeSelf">
+                and department.lft &gt; d.lft
+                and department.lft &lt; d.rgt
+            </if>
+            <if test="levelLimit != null">
+                and department.level - d.level &lt;= #{levelLimit,jdbcType=INTEGER}
+            </if>
+            )
+        </where>
+        ORDER BY lft ASC
+    </select>
+
+    <!--    &lt;update id="updateAddBackData"&gt;-->
+    <!--        update department,-->
+    <!--            (select max(d.lft) lft-->
+    <!--             from department d-->
+    <!--             where d.id=#{id,jdbcType=BIGINT} or exists(-->
+    <!--                           select *-->
+    <!--                           from department p-->
+    <!--                           where id = #{id,jdbcType=BIGINT}-->
+    <!--                             and d.level = p.level + 1-->
+    <!--                             and d.lft &amp;gt; p.lft-->
+    <!--                             and d.rgt &amp;lt; p.rgt-->
+    <!--                       )) n-->
+    <!--        set department.lft = IF(department.lft &amp;gt; n.lft, department.lft + 2, department.lft),-->
+    <!--            department.rgt = IF(department.rgt &amp;gt;= n.lft, department.rgt + 2, department.rgt)-->
+    <!--        where (department.lft &amp;gt; n.lft or department.rgt &amp;gt;= n.lft)-->
+    <!--    &lt;/update&gt;-->
+
+    <select id="getLastInsertLft" resultType="int">
+        select max(lft)
+        from department d
+        where exists(
+                      select 1
+                      from department p
+                      where p.id = #{id,jdbcType=INTEGER}
+                        and d.level = p.level + 1
+                        and d.lft &gt; p.lft
+                        and d.rgt &lt; p.rgt
+                  )
+    </select>
+
+    <select id="getAncestor" resultMap="BaseResultMap">
+        select id, name, lft, rgt, level
+        from department
+        where exists(
+        select 1
+        from department d
+        <where>
+            id = #{id,jdbcType=BIGINT}
+            <if test="includeSelf != null and includeSelf">
+                and department.lft &lt;= d.lft
+                and department.rgt &gt;= d.rgt
+            </if>
+            <if test="includeSelf==null or !includeSelf">
+                and department.lft &lt; d.lft
+                and department.rgt &gt; d.rgt
+            </if>
+            <if test="levelLimit != null">
+                and d.level - department.level &lt;= #{levelLimit,jdbcType=INTEGER}
+            </if>
+            )
+        </where>
+        ORDER BY lft ASC
+    </select>
+</mapper>
